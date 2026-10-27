@@ -47,4 +47,3 @@ EXPOSE 1514/tcp 8080/tcp
 
 ENTRYPOINT ["/usr/local/bin/logdy", "--ui-ip", "0.0.0.0"]
 CMD ["socket", "1514"]
-
