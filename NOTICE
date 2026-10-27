@@ -1,0 +1,8 @@
+This project packages Logdy from https://github.com/logdyhq/logdy-core as a
+general-purpose container image. It does not depend on Homey or any other log
+producer.
+
+Logdy is Copyright its contributors and is licensed under Apache License 2.0.
+The Docker packaging and deployment examples in this repository are separate
+work and are licensed under the MIT License.
+

@@ -1,0 +1,46 @@
+services:
+  logdy:
+    image: ${LOGDY_IMAGE:-ghcr.io/ptiyannou/logdy-docker:latest}
+    container_name: logdy
+    restart: unless-stopped
+    init: true
+    user: "65532:65532"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+    environment:
+      TZ: Europe/Paris
+      LOGDY_PORT: "8080"
+      LOGDY_UI_IP: "0.0.0.0"
+      LOGDY_UI_PASS: ${LOGDY_UI_PASS:?Set LOGDY_UI_PASS in .env}
+      LOGDY_APPEND_TO_FILE: ${LOGDY_LOG_FILE:-/data/logdy.log}
+      LOGDY_ROTATE_FILE_SIZE: ${LOGDY_ROTATE_FILE_SIZE:-25M}
+    command:
+      - socket
+      - "1514"
+      - --append-to-file-raw
+      - --max-message-count
+      - ${LOGDY_MAX_MESSAGES:-10000}
+      - --no-analytics
+      - --no-updates
+    ports:
+      - ${BIND_ADDRESS:-127.0.0.1}:${SYSLOG_PORT:-1514}:1514/tcp
+      - ${BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8086}:8080/tcp
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8080"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "3"
+
